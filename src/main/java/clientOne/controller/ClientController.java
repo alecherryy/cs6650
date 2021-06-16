@@ -4,9 +4,7 @@ import clientOne.model.Consumer;
 import clientOne.model.DataQueue;
 import clientOne.model.Producer;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.concurrent.*;
 
 /**

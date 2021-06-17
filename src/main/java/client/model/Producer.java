@@ -1,9 +1,6 @@
-package clientTwo.model;
+package client.model;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * This class represents a Producer that implements
@@ -43,8 +40,9 @@ public class Producer implements Runnable {
         try (BufferedReader br = new BufferedReader(this.file)) {
             while (br.ready()) {
                 // ignore empty lines
-                if (!br.readLine().isEmpty()) {
-                    buffer.buffer.put(br.readLine());
+                String line = br.readLine().strip();
+                if (!line.equals("\n")) {
+                    buffer.buffer.put(br.readLine().strip());
                 }
             }
             buffer.done = true;

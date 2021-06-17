@@ -1,13 +1,15 @@
-package clientOne.model;
+package client.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
 
@@ -17,6 +19,7 @@ import java.util.HashMap;
  */
 public class Request {
     private static String URL = "http://localhost:8080/app/textbody/";
+    private static final String PARAM = "?message=";
     // define HTTP client
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .version(HttpClient.Version.HTTP_1_1)
@@ -48,31 +51,7 @@ public class Request {
         String requestBody = mapper.writeValueAsString(values);
 
         // call private method to build POST request
-        buildRequest(requestBody);
-    }
-
-    /**
-     * Overload class constructor.
-     *
-     * @param body of the HTTP request
-     * @throws JsonProcessingException if the body format is invalid
-     */
-    public Request(String type, String body) throws JsonProcessingException {
-        if (type.isEmpty()) {
-            throw new IllegalArgumentException("One or more parameters are missing.");
-        }
-        this.type = type;
-        // create new hash map
-        var values = new HashMap<String, String>() {{
-            put("message", body);
-        }};
-
-        // map key-value pairs
-        var mapper = new ObjectMapper();
-        String requestBody = mapper.writeValueAsString(values);
-
-        // call private method to build POST request
-        buildRequest(requestBody);
+        buildRequest(body);
     }
 
     /**
@@ -96,13 +75,16 @@ public class Request {
      */
     private void buildRequest(String body) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
+        System.out.println("Here");
+        System.out.println(URL + function + "?message=" + body);
         switch (this.type) {
             case "GET":
                 // do something some day
                 break;
             case "POST":
-                builder.POST(HttpRequest.BodyPublishers.ofString(body))
-                        .uri(URI.create(URL + function));
+                String url = new StringBuilder(URL + function + PARAM + URLEncoder.encode(body, StandardCharsets.UTF_8)).toString();
+                builder.POST(HttpRequest.BodyPublishers.noBody())
+                        .uri(URI.create(url));
                 break;
             case "PUT":
                 // do something some day

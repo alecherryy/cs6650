@@ -1,8 +1,8 @@
-package clientOne.controller;
+package client.controller;
 
-import clientOne.model.Consumer;
-import clientOne.model.DataQueue;
-import clientOne.model.Producer;
+import client.model.Consumer;
+import client.model.DataQueue;
+import client.model.Producer;
 
 import java.io.FileNotFoundException;
 import java.util.concurrent.*;

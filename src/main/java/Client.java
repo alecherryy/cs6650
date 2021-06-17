@@ -1,6 +1,4 @@
-package clientOne;
-
-import clientOne.controller.ClientController;
+import client.controller.ClientController;
 
 import java.io.IOException;
 import java.util.Scanner;

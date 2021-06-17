@@ -1,15 +1,14 @@
-import model.Task;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import server.model.Task;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.nio.channels.Channel;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * This class a Servlet app; it can be used to implement
@@ -51,26 +50,39 @@ public class Server extends HttpServlet {
         }
 
         String function = req.getPathInfo().split("/")[1];
-        String body = req.getReader().readLine();
+        String str = req.getParameter("message");
 
-        HashMap<String, Integer> data = evaluateMessage(function, body);
+        System.out.println(str);
 
-        if (data == null) {
-            res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            res.getWriter().write("This operation cannot be performed.");
-        } else {
-            try {
-
-            } catch (Exception e) {
-                res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                res.getWriter().write("Something went wrong and the server failed..");
-                e.printStackTrace();
-            }
-
-        }
+//        Gson obj = new Gson();
+//        Message msg = obj.fromJson(str, Message.class);
+//
+//        System.out.println(msg);
 
 
-        res.getWriter().write("Success!");
+//        if (req.getParameter("message").equals("I am a message")) {
+//            res.setStatus(HttpServletResponse.SC_OK);
+//            res.getWriter().write("Success!");
+//        } else {
+//            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+//            res.getWriter().write("Fail!");
+//        }
+
+        HashMap<String, Integer> data = evaluateMessage(function, str);
+
+//        if (data == null) {
+//            res.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+//            res.getWriter().write("This operation cannot be performed.");
+//        } else {
+//            try {
+//
+//            } catch (Exception e) {
+//                res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//                res.getWriter().write("Something went wrong and the server failed..");
+//                e.printStackTrace();
+//            }
+//
+//        }
 
     }
 
@@ -103,6 +115,7 @@ public class Server extends HttpServlet {
 
         switch (val) {
             case "WORDCOUNT":
+                System.out.println(str);
                 return this.task.countWords(str);
             case "CHARCOUNT":
                 this.task.countChars(str);

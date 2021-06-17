@@ -16,6 +16,7 @@ import java.util.HashMap;
  * be use to construct a new type of request.
  */
 public class Request {
+    // private static String URL = "http://34.227.228.101:8080/java_app_war/textbody/wordcount";
     private static String URL = "http://localhost:8080/app/textbody/";
     // define HTTP client
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()

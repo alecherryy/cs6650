@@ -75,8 +75,6 @@ public class Request {
      */
     private void buildRequest(String body) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
-        System.out.println("Here");
-        System.out.println(URL + function + "?message=" + body);
         switch (this.type) {
             case "GET":
                 // do something some day

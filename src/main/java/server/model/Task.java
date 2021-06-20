@@ -24,8 +24,9 @@ public class Task {
     public HashMap<String, Integer> countWords(String str) {
         HashMap<String, Integer> tuple = new HashMap();
         for (String s : str.split("\\s+")) {
-            if (!s.isEmpty())
-                tuple.put(s, 1);
+            if (!s.isEmpty()) {
+                tuple.put(s, tuple.getOrDefault(s, 0) + 1);
+            }
         }
 
         return tuple;

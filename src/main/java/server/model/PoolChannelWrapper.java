@@ -5,7 +5,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 
 /**
  * This class represents a wrapper for a GenericObjectPool
- * class. It's needed to create a new pool in ServerController and avoid
+ * class. It's needed to create a new pool in the Server class and avoid
  * an exception.
  */
 public class PoolChannelWrapper {

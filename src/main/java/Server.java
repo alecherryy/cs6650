@@ -1,4 +1,4 @@
-import client.model.ChannelFactory;
+import server.model.PoolChannelFactory;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -19,18 +19,18 @@ public class Server extends HttpServlet {
     private PoolChannelWrapper pool;
 
     /**
-     * Init method.
+     * Overload init() method to create a new channel pool.
      *
      * @throws ServletException
      */
     public void init() throws ServletException {
         super.init();
-        GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new ChannelFactory());
+        GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new PoolChannelFactory());
         GenericObjectPoolConfig<Channel> config = new GenericObjectPoolConfig<>();
-        // prevent access if the pool is at capacity
-        config.setMaxTotal(256);
-        config.setMinIdle(64);
+        config.setMaxTotal(256); // max number of threads to experiment with
+        config.setMinIdle(64); // min number of threads to experiment with
         config.setMaxIdle(256);
+        // prevent access if the pool is at capacity
         config.setBlockWhenExhausted(true);
         objPool.setConfig(config);
         this.pool = new PoolChannelWrapper(objPool);
@@ -81,6 +81,7 @@ public class Server extends HttpServlet {
 
         try {
             res.setStatus(HttpServletResponse.SC_OK);
+            // borrow a channel from the pool
             Channel c = this.pool.getPool().borrowObject();
             // push message to the queue
             c.basicPublish("RABBIT_EXCHANGE", "", null, msg.toString().getBytes());

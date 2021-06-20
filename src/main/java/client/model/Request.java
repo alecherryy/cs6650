@@ -18,6 +18,7 @@ import java.util.HashMap;
  * be use to construct a new type of request.
  */
 public class Request {
+    // RUNNING ON LOCAL BECAUSE I AM LOCKED OUT OF AWS ACCOUNT
     private static String URL = "http://localhost:8080/app/textbody/";
     private static final String PARAM = "?message=";
     // define HTTP client

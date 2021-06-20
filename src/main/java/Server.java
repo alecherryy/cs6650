@@ -27,9 +27,6 @@ public class Server extends HttpServlet {
         super.init();
         GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new PoolChannelFactory());
         GenericObjectPoolConfig<Channel> config = new GenericObjectPoolConfig<>();
-        config.setMaxTotal(256); // max number of threads to experiment with
-        config.setMinIdle(64); // min number of threads to experiment with
-        config.setMaxIdle(256);
         // prevent access if the pool is at capacity
         config.setBlockWhenExhausted(true);
         objPool.setConfig(config);

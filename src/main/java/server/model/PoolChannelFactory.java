@@ -5,7 +5,6 @@ import org.apache.commons.pool2.BasePooledObjectFactory;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
-import server.model.PoolConnection;
 
 /**
  * This class represents a Channel Factory.

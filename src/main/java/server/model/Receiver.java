@@ -1,34 +1,37 @@
 package server.model;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DeliverCallback;
+
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public class Receiver {
+    private Connection conn;
     private final static String QUEUE_NAME = "SERVER_QUEUE";
 
-
-    public Receiver() {}
+    /**
+     * Class constructor.
+     *
+     * @param conn connection
+     */
+    public Receiver(Connection conn) {
+        this.conn = conn;
+    }
 
     public void start() throws IOException {
-//        ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("localhost");
-//
-//        try {
-//            Connection conn = factory.newConnection();
-//            Channel channel = conn.createChannel();
-//            channel.exchangeDeclare(QUEUE_NAME, "fanout");
-//            String queueName = channel.queueDeclare().getQueue();
-//            channel.queueBind(queueName, QUEUE_NAME, "");
-//
-//            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-//
-//            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-//                String message = new String(delivery.getBody(), "UTF-8");
-//                System.out.println(" [x] Received '" + message + "'");
-//            };
-//            channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
-//        } catch (IOException | TimeoutException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Channel channel = this.conn.createChannel();
+            channel.exchangeDeclare(QUEUE_NAME, "fanout");
+            String queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, QUEUE_NAME, "");
+
+            DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                new String(delivery.getBody(), "UTF-8");
+            };
+            channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

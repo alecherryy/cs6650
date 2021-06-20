@@ -20,7 +20,7 @@ public class RabbitConnection {
         Connection newConn = createConnection();
 
         try {
-//            this.conn = newConn;
+            this.conn = newConn;
         } catch (NullPointerException e) {
             System.out.println("Could not establish a connection");
         }
@@ -42,8 +42,8 @@ public class RabbitConnection {
      */
     private Connection createConnection() {
         ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("52.206.15.156");
         factory.setHost("localhost");
+//        factory.setHost("52.206.15.156");
 
         try {
             return factory.newConnection();

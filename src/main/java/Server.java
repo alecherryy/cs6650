@@ -1,11 +1,14 @@
-import com.rabbitmq.client.ConnectionFactory;
-import server.controller.ServerController;
-import server.model.Task;
+import client.model.ChannelFactory;
+import com.rabbitmq.client.Channel;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import server.model.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * This class a Servlet app; it can be used to implement
@@ -13,7 +16,31 @@ import java.io.IOException;
  */
 @WebServlet(urlPatterns = {"/textbody/*"})
 public class Server extends HttpServlet {
-    private final Task task = new Task();
+    private PoolChannelWrapper pool;
+
+    /**
+     * Init method.
+     *
+     * @throws ServletException
+     */
+    public void init() throws ServletException {
+        super.init();
+        GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new ChannelFactory());
+        GenericObjectPoolConfig<Channel> config = new GenericObjectPoolConfig<>();
+        // prevent access if the pool is at capacity
+        config.setMaxTotal(256);
+        config.setMinIdle(64);
+        config.setMaxIdle(256);
+        config.setBlockWhenExhausted(true);
+        objPool.setConfig(config);
+        this.pool = new PoolChannelWrapper(objPool);
+
+        try {
+            this.pool.getPool().preparePool();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * This method overrides the HttpServlet doGet(). It returns void.
@@ -50,17 +77,19 @@ public class Server extends HttpServlet {
 
         String function = req.getPathInfo().split("/")[1];
         String str = req.getParameter("message");
-
-//        factory.setHost("52.206.15.156");
+        HashMap<String, Integer> msg = evaluateMessage(function, str);
 
         try {
-            ServerController controller = new ServerController(function, str);
-            controller.start();
             res.setStatus(HttpServletResponse.SC_OK);
+            Channel c = this.pool.getPool().borrowObject();
+            // push message to the queue
+            c.basicPublish("RABBIT_EXCHANGE", "", null, msg.toString().getBytes());
+            // return channel to the pool
+            this.pool.getPool().returnObject(c);
         } catch (Exception e) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
         }
-
     }
 
     /**
@@ -78,5 +107,28 @@ public class Server extends HttpServlet {
         }
 
         return true;
+    }
+
+    /**
+     * Private helper method to check whether the request
+     * parameters are valid.
+     *
+     * @param function of the POST request
+     * @return true if all parameters are valid, otherwise returns false
+     */
+    private HashMap<String, Integer> evaluateMessage(String function, String str) {
+        String val = function.toUpperCase();
+
+        switch (val) {
+            case "WORDCOUNT":
+                return new Task().countWords(str);
+            case "CHARCOUNT":
+                new Task().countChars(str);
+                break;
+            default:
+                return null;
+        }
+
+        return null;
     }
 }

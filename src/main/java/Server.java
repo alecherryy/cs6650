@@ -77,7 +77,9 @@ public class Server extends HttpServlet {
         HashMap<String, Integer> msg = evaluateMessage(function, str);
 
         try {
+            // return response to client
             res.setStatus(HttpServletResponse.SC_OK);
+            res.getWriter().write(msg.size());
             // borrow a channel from the pool
             Channel c = this.pool.getPool().borrowObject();
             // push message to the queue

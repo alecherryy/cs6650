@@ -61,10 +61,10 @@ public class Request {
      *
      * @return the response status code, i.e. 200, 400 or 500
      */
-    public int send() throws IOException, InterruptedException {
+    public HttpResponse send() throws IOException, InterruptedException {
         HttpResponse<String> res = HTTP_CLIENT.send(req, HttpResponse.BodyHandlers.ofString());
 
-        return res.statusCode();
+        return res;
     }
 
     /**

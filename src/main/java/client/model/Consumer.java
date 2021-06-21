@@ -3,6 +3,7 @@ package client.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 
 /**
  * This class represents a Producer that implements
@@ -39,9 +40,9 @@ public class Consumer implements Runnable {
                 data = buffer.buffer.take();
 
                 // send data to server
-                int res = new Request("POST", "wordcount", data).send();
+                HttpResponse res = new Request("POST", "wordcount", data).send();
                 // check response status code
-                if (res == 200) {
+                if (res.statusCode() == 200) {
                     // + 1 to success counter
                     buffer.success.getAndIncrement();
                 } else {

@@ -12,7 +12,7 @@ import org.apache.commons.pool2.impl.DefaultPooledObject;
 public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
     private final static String QUEUE_NAME = "RABBIT_QUEUE";
     private final static String EXCHANGE_NAME = "RABBIT_EXCHANGE";
-    private Connection config;
+    private Connection conn;
 
     /**
      * Class constructor.
@@ -20,7 +20,7 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
     public PoolChannelFactory() {
         super();
         // open a new connection with RabbitMQ
-        config = new PoolConnection().getConnection();
+        conn = new PoolConnection().getConnection();
     }
 
     /**
@@ -31,7 +31,7 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
      */
     @Override
     public Channel create() throws Exception {
-        Channel channel = config.createChannel();
+        Channel channel = conn.createChannel();
         channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
         channel.queueDeclare(QUEUE_NAME, true, false, false, null);
         channel.queueBind(QUEUE_NAME, EXCHANGE_NAME,"");

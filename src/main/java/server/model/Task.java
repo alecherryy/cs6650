@@ -1,6 +1,7 @@
 package server.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * This class represents a Task. The object can perform various
@@ -25,7 +26,8 @@ public class Task {
         HashMap<String, Integer> tuple = new HashMap();
         for (String s : str.split("\\s+")) {
             if (!s.isEmpty()) {
-                tuple.put(s, tuple.getOrDefault(s, 0) + 1);
+                // ignore casing
+                tuple.put(s.toLowerCase(Locale.ROOT), tuple.getOrDefault(s, 0) + 1);
             }
         }
 

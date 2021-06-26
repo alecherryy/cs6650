@@ -1,3 +1,4 @@
+import server.controller.ServerController;
 import server.model.PoolChannelFactory;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -8,7 +9,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * This class a Servlet app; it can be used to implement
@@ -74,16 +74,13 @@ public class Server extends HttpServlet {
 
         String function = req.getPathInfo().split("/")[1];
         String str = req.getParameter("message");
-        HashMap<String, Integer> msg = evaluateMessage(function, str);
-
         try {
+            ServerController controller = new ServerController(this.pool);
+            int size = controller.start(function, str).size();
+
+            // return response to client
             res.setStatus(HttpServletResponse.SC_OK);
-            // borrow a channel from the pool
-            Channel c = this.pool.getPool().borrowObject();
-            // push message to the queue
-            c.basicPublish("RABBIT_EXCHANGE", "", null, msg.toString().getBytes());
-            // return channel to the pool
-            this.pool.getPool().returnObject(c);
+            res.getWriter().write("Total unique words: " + size);
         } catch (Exception e) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace();
@@ -105,28 +102,5 @@ public class Server extends HttpServlet {
         }
 
         return true;
-    }
-
-    /**
-     * Private helper method to check whether the request
-     * parameters are valid.
-     *
-     * @param function of the POST request
-     * @return true if all parameters are valid, otherwise returns false
-     */
-    private HashMap<String, Integer> evaluateMessage(String function, String str) {
-        String val = function.toUpperCase();
-
-        switch (val) {
-            case "WORDCOUNT":
-                return new Task().countWords(str);
-            case "CHARCOUNT":
-                new Task().countChars(str);
-                break;
-            default:
-                return null;
-        }
-
-        return null;
     }
 }

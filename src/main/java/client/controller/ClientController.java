@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.concurrent.*;
 
 /**
- * This class represents a clientOne.controller for the client.
+ * This class represents a Controller for the client.
  */
 public class ClientController {
     private String file;

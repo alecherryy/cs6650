@@ -49,7 +49,23 @@ public class Server extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // do something, some day
+        if (!hasValidParameters(req)) {
+            res.getWriter().write("One or both parameters " +
+                    "are missing");
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        String function = req.getPathInfo().split("/")[1];
+        String word = req.getPathInfo().split("/")[2];
+
+        if (word != null && function != null) {
+            System.out.println(word);
+        } else {
+            res.getWriter().write("One or both parameters " +
+                    "are missing");
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     /**

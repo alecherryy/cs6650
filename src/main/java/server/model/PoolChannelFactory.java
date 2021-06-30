@@ -1,6 +1,7 @@
 package server.model;
 
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DeliverCallback;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.pool2.PooledObject;
@@ -35,6 +36,14 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
         channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
         channel.queueDeclare(QUEUE_NAME, true, false, false, null);
         channel.queueBind(QUEUE_NAME, EXCHANGE_NAME,"");
+
+        // define callback
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String msg = new String(delivery.getBody(), "UTF-8");
+            System.out.println("Current message: " + msg);
+        };
+        // consume messages posted to the queue
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
 
         return channel;
     }

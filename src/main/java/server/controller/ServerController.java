@@ -39,6 +39,7 @@ public class ServerController {
             c = this.pool.getPool().borrowObject();
             // push message to the queue
             c.basicPublish("RABBIT_EXCHANGE", "", null, msg.toString().getBytes());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

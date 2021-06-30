@@ -1,15 +1,16 @@
 package server.model;
 
-import com.rabbitmq.client.Connection;
-import org.apache.commons.pool2.BasePooledObjectFactory;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DeliverCallback;
+import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 
 /**
  * This class represents a Channel Factory.
  */
-public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
+public class PoolReceiverFactory extends BasePooledObjectFactory<Channel> {
     private final static String QUEUE_NAME = "RABBIT_QUEUE";
     private final static String EXCHANGE_NAME = "RABBIT_EXCHANGE";
     private Connection conn;
@@ -17,7 +18,7 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
     /**
      * Class constructor.
      */
-    public PoolChannelFactory() {
+    public PoolReceiverFactory() {
         super();
         // open a new connection with RabbitMQ
         conn = new PoolConnection().getConnection();
@@ -35,6 +36,13 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
         channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
         channel.queueDeclare(QUEUE_NAME, true, false, false, null);
         channel.queueBind(QUEUE_NAME, EXCHANGE_NAME,"");
+
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+            String msg = new String(delivery.getBody(), "UTF-8");
+            System.out.println("Current message: " + msg);
+        };
+        channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
 
         return channel;
     }

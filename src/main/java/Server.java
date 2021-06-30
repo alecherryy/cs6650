@@ -1,5 +1,5 @@
 import server.controller.ServerController;
-import server.model.PoolChannelFactory;
+import server.model.PoolSenderFactory;
 import com.rabbitmq.client.Channel;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -25,7 +25,7 @@ public class Server extends HttpServlet {
      */
     public void init() throws ServletException {
         super.init();
-        GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new PoolChannelFactory());
+        GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new PoolSenderFactory());
         GenericObjectPoolConfig<Channel> config = new GenericObjectPoolConfig<>();
         // prevent access if the pool is at capacity
         config.setBlockWhenExhausted(true);
@@ -49,7 +49,23 @@ public class Server extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        // do something, some day
+        if (!hasValidParameters(req)) {
+            res.getWriter().write("One or both parameters " +
+                    "are missing");
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        String function = req.getPathInfo().split("/")[1];
+        String word = req.getPathInfo().split("/")[2];
+
+        if (word != null && function != null) {
+            System.out.println(word);
+        } else {
+            res.getWriter().write("One or both parameters " +
+                    "are missing");
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     /**

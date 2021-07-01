@@ -1,27 +1,18 @@
 # Design Document
-## Structure
-After refactoring the client from Assignment 1; I updated the project structure to include the `Server`.
+## Database
+For the database implementation, I ended up using MySQL. Unfortunately, I couldn't create an RDS instance on AWS,
+I kept getting denied permissions. As an alternative solution, I deployed the database on Heroku; I assume it could still
+count as a distributed system.
 
+I created a table called `words` and used each word as the `PRIMARY_KEY`; this might be a questionable choice, but given
+the limited business logic of the application, I figured it'd work well. Each record has two colums, the `wid` and `total`;
+the `total` column stores the number of times a words is posted to the API. 
+Additionally, I updated the code to exclude punctuation and special
+characters from being published to the RabbitMQ queue, so I could more easily parse the string message published to the queue. 
+I am also ignoring upper and lower cases in each word so that equal words are not 
+counted as different records.
 
-### Server
-The `Server` class has been updated to include the `init()` method; this is where I call all objects needed to create a
-connection to RabbitMQ and instantiate a new channel pool. In the `doPost()`, we grab a Channel from
-the pool each time a new request is received, publish the payload to the queue and return the channel to the pool.
-To successfully implement the Channel Pool, I created three additional classes.
+To connect to the database, I created two classes: `Database` and `DatabaseDao`. The database class establishes a connection
+with the db and implements basic CRUD operations. The DAO is to include a separation layer between the business logic and
+the database so that the application is agnostic of the db implementation.
 
-The `PoolChannelFactory` class is used to create a new `Channel` object to inject into the object pool; in the `create()`
-method I define the queue and exchange names to create a Sender. As channels are
-created they are placed into the pool and are selectively taken out and put back in the pool
-once the message has been delivered to the queue.
-
-The `PoolChannelWrapper` is more of a utility class to prevent Exceptions when instantiating a new pool.
-
-Based on the assignment suggestions, I have placed some of the connection-related functionality in the
-`init()` method of the `Server`; however, I'd like to keep abiding by the MVC pattern, so I placed some of the core
-functionality of the system to the `ServerController`. The controller evaluates the text posted to the API
-and posts messages to the queue.
-
-Aside from that, the only other new Class I created was the `Task` class which can be used to perform different operations
-on the HTTP requests bodies.
-
-All results from the various tests can be found in the `/screenshots` folder.

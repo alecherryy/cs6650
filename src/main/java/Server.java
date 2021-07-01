@@ -60,7 +60,10 @@ public class Server extends HttpServlet {
         String word = req.getPathInfo().split("/")[2];
 
         if (word != null && function != null) {
-            System.out.println(word);
+            DatabaseDao dao = new DatabaseDao();
+            int num = dao.readRecord(word);
+            res.getWriter().write("Total count for [" + word + "]: " + num);
+            res.setStatus(HttpServletResponse.SC_OK);
         } else {
             res.getWriter().write("One or both parameters " +
                     "are missing");

@@ -43,7 +43,7 @@ public class PoolConnection {
     private Connection createConnection() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
-//        factory.setHost("52.206.15.156");
+//        factory.setHost("57.180.04.236");
 
         try {
             return factory.newConnection();

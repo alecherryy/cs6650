@@ -80,7 +80,6 @@ public class Database {
     public int updateRecord(String key, int val) throws SQLException {
         int result;
         int num = readRecord(key);
-        System.out.println(val);
         int total = num + val;
         String query = "UPDATE words SET total = " + total + "/+" + val  + " WHERE wid = '" + key + "';";
 

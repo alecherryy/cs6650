@@ -25,4 +25,14 @@ public class DatabaseDao {
             }
         }
     }
+
+    /**
+     * Return total count of given word.
+     *
+     * @param word to retrieve from the database
+     * @return the total count of the word
+     */
+    public int readRecord(String word) {
+        return db.readRecord(word);
+    }
 }

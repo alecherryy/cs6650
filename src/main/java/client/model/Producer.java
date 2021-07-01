@@ -42,7 +42,7 @@ public class Producer implements Runnable {
                 // ignore empty lines
                 String line = br.readLine().strip();
                 if (!line.equals("\n")) {
-                    buffer.buffer.put(br.readLine().strip());
+                    buffer.buffer.put(br.readLine().replaceAll("[^a-zA-Z ]", "").strip());
                 }
             }
             buffer.done = true;

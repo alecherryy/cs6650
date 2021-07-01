@@ -1,9 +1,8 @@
 package server.controller;
 
 import com.rabbitmq.client.Channel;
+import server.model.DatabaseDao;
 import server.model.PoolChannelWrapper;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import server.model.Task;
 
 import java.util.HashMap;

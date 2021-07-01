@@ -1,11 +1,13 @@
 package server.model;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DatabaseDao {
-    private final static Database db = new Database();
-    public DatabaseDao() {}
+    private Database db;
+
+    public DatabaseDao() {
+        db = new Database();
+    }
 
     public void addRecord(String str) throws SQLException {
         // split string to isolate values

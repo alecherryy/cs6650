@@ -13,7 +13,6 @@ import java.sql.SQLException;
  * This class represents a Channel Factory.
  */
 public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
-    private final static DatabaseDao dao = new DatabaseDao();
     private final static String QUEUE_NAME = "RABBIT_QUEUE";
     private final static String EXCHANGE_NAME = "RABBIT_EXCHANGE";
     private Connection conn;
@@ -43,9 +42,9 @@ public class PoolChannelFactory extends BasePooledObjectFactory<Channel> {
         // define callback
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String msg = new String(delivery.getBody(), "UTF-8");
-
             // add record to the database
             try {
+                DatabaseDao dao = new DatabaseDao();
                 dao.addRecord(msg.replace("{", "").replace("}", "").replaceAll(" ", ""));
             } catch (SQLException throwables) {
                 throwables.printStackTrace();

@@ -15,6 +15,7 @@ public class Database {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/bdsd_db", "root", "password");
+            conn.setAutoCommit(false);
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -28,16 +29,20 @@ public class Database {
      * @return result of the query
      */
     public int createRecord(String key, int val) {
+        int result;
         String query = "INSERT INTO words (wid, total) VALUES ('" + key + "', " + val + ");";
 
         try {
-            int result = this.conn.createStatement().executeUpdate(query);
-            return result;
+            PreparedStatement st = this.conn.prepareStatement(query);
+            st.executeUpdate();
+            this.conn.commit();
+//            this.conn.close();
+            result = 1;
         } catch (SQLException e) {
-            // do nothing and go to return statement
+            result = -1;
         }
 
-        return -1;
+        return result;
     }
 
     /**
@@ -46,16 +51,23 @@ public class Database {
      * @param key of the record to be retrieved
      * @return result of the query
      */
-    public ResultSet readRecord(String key) {
+    public int readRecord(String key) {
         String query = "SELECT * FROM words WHERE wid = '" + key + "';";
 
         try {
-            return this.conn.createStatement().executeQuery(query);
+            ResultSet rs =  this.conn.createStatement().executeQuery(query);
+
+            if (rs.next()) {
+                // get total count for word
+                int val = rs.getInt(2);
+                return val;
+            }
         } catch (SQLException e) {
             // do nothing and go to return statement
+            e.printStackTrace();
         }
 
-        return null;
+        return -1;
     }
 
     /**
@@ -66,17 +78,24 @@ public class Database {
      * @return result of the query
      */
     public int updateRecord(String key, int val) throws SQLException {
-        int result = readRecord(key).findColumn("total");
-        int total = result + val;
+        int result;
+        int num = readRecord(key);
+        System.out.println(val);
+        int total = num + val;
         String query = "UPDATE words SET total = " + total + "/+" + val  + " WHERE wid = '" + key + "';";
 
         try {
-            return this.conn.createStatement().executeUpdate(query);
+            PreparedStatement st = this.conn.prepareStatement(query);
+            st.executeUpdate();
+            this.conn.commit();
+//            this.conn.close();
+            result = 1;
         } catch (SQLException e) {
-            // do nothing and go to return statement
+            result = -1;
+            e.printStackTrace();
         }
 
-        return -1;
+        return result;
     }
 
     /**

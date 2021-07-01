@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 public class Request {
     // RUNNING ON LOCAL BECAUSE I AM LOCKED OUT OF AWS ACCOUNT
-    private static String URL = "http://localhost:8080/app/textbody/";
+    private static String URL = "http://54.159.51.11/app/textbody/";
     private static final String PARAM = "?message=";
     // define HTTP client
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()

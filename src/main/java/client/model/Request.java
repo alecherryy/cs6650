@@ -76,12 +76,14 @@ public class Request {
      */
     private void buildRequest(String body) {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
+        String url = "";
         switch (this.type) {
             case "GET":
-                // do something some day
+                url = URL + function + body;
+                builder.GET().uri(URI.create(url));
                 break;
             case "POST":
-                String url = new StringBuilder(URL + function + PARAM + URLEncoder.encode(body, StandardCharsets.UTF_8)).toString();
+                url = new StringBuilder(URL + function + PARAM + URLEncoder.encode(body, StandardCharsets.UTF_8)).toString();
                 builder.POST(HttpRequest.BodyPublishers.noBody())
                         .uri(URI.create(url));
                 break;

@@ -28,7 +28,9 @@ public class Server extends HttpServlet {
         GenericObjectPool<Channel> objPool = new GenericObjectPool<>(new PoolChannelFactory());
         GenericObjectPoolConfig<Channel> config = new GenericObjectPoolConfig<>();
         // prevent access if the pool is at capacity
-        config.setBlockWhenExhausted(true);
+//        config.setBlockWhenExhausted(true);
+        // set min number of objects
+        config.setMinIdle(5000);
         objPool.setConfig(config);
         this.pool = new PoolChannelWrapper(objPool);
 
@@ -60,8 +62,11 @@ public class Server extends HttpServlet {
         String word = req.getPathInfo().split("/")[2];
 
         if (word != null && function != null) {
+            // create new database connection
             DatabaseDao dao = new DatabaseDao();
             int num = dao.readRecord(word);
+
+            // return response
             res.getWriter().write("Total count for [" + word + "]: " + num);
             res.setStatus(HttpServletResponse.SC_OK);
         } else {
